@@ -42,9 +42,17 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
 
     //inicializando a animação
     animation = Tween<double>(begin: 0, end: 300).animate(controller);
-    //sempre que houver alguma alteração no valor, o listener notificará para que a tela seja redesenhada
-    animation.addListener(() {
-      setState(() {});
+    //notifica a mudança do estado
+    animation.addStatusListener((status) {
+      //se a animação tiver sido completada
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      }
+
+      //se a animação tiver sido de tras pra frente
+      else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
     });
 
     //o forward  quer dizer animar pára frente, quaso queira animar atrás usar o reverse
@@ -61,6 +69,19 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
   //layout
   @override
   Widget build(BuildContext context) {
+    return AnimatedLogo(animation);
+  }
+}
+
+//Widget animated
+class AnimatedLogo extends AnimatedWidget {
+  //O construtor do AnimatedLogo recebe uma animação e é passada para o construtor do AnimatedWidget
+  AnimatedLogo(Animation<double> animation) : super(listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final Animation<double> animation = listenable;
+
     return Center(
       child: Container(
         height: animation.value,
